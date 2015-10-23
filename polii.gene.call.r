@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript 
+
 # polii.gene.call.r
 # Copyright © 2014-15, Owen Marshall
 
@@ -16,7 +18,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 
 # USA
 
-# version 0.99
+# version 0.991
 
 ### FDR calcs ###
 # Method based on original perl scripts by Tony Southall (TDS) as published in
@@ -27,7 +29,7 @@
 # * using a linear regression for the final intercept value rather than using the average intercept value for all conditions
 # -- both of these should increase the accuracy of the final FDR value.
 
-version <- 0.99
+version <- 0.991
 cat(paste("polii.gene.call.r v",version,"\n", sep=""))
 
 ### Read CLI options
@@ -85,7 +87,7 @@ op.args <- list(
 read.ops(input.args)
 
 if (length(in.files) == 0) {
-	cat("polii.gene.call.r\nCalculates FDR and average polII occupancy for annotated genes\n\nUsage: Rscript polii.gene.call.r [list of .gatc.gff ratio files to process]\n\n")
+	cat("Usage: Rscript polii.gene.call.r [list of .gatc.gff ratio files to process]\n\n")
 	quit("no",1)
 }
 
@@ -96,6 +98,23 @@ dump.random <- runif(1)
 my.seed  <- .Random.seed
 write.table(my.seed,".randomseed")
 
+### read genes file
+cat("Reading genes data file ...\n")
+genes.file=op.args[["genes.file"]]
+genes <- read.table(genes.file, comment.char="#", sep="\t", quote="", fill=T)
+names(genes) <-  c('chr','source','type','start','end','score','strand','c','details')
+
+# only subset if there is a type termed "gene"
+if (any(genes$type == 'gene')) {
+  genes <- subset(genes, type=='gene')
+}
+
+genes$name <- sapply(genes$details, FUN = function (x) {regmatches(x,gregexpr("(?<=Name=).*?(?=;)", x, perl=T))} )
+genes <- genes[,c('chr','start','end','strand','name')]
+if (nrow(genes) == 0) {
+	cat("Error: unable to extract gene information from genes file\n\n")
+	quit("no",1)
+}
 
 ### functions
 read.gff <- function (x,name="score") {
@@ -104,19 +123,7 @@ read.gff <- function (x,name="score") {
   return(temp.data)
 }
 
-gene.exp <- function (input.df, buffer=0, iter=50000, debug=F, genes.file="/mnt/data/Genomes/dmel_release/DmR6/DmR6.genes.gff") {
-  
-  cat("Reading genes data file ...\n")
-  genes <- read.table(genes.file, comment.char="#", sep="\t", quote="")
-  names(genes) <-  c('chr','source','type','start','end','score','strand','c','details')
-  
-  # only subset if there is a type termed "gene"
-  if (any(genes$type == 'gene')) {
-    genes <- subset(genes, type=='gene')
-  }
-  
-  genes$name <- sapply(genes$details, FUN = function (x) {regmatches(x,gregexpr("(?<=Name=).*?(?=;)", x, perl=T))} )
-  genes <- genes[,c('chr','start','end','strand','name')]
+gene.exp <- function (input.df, buffer=0, iter=50000, debug=F) {
   
   avg.exp <- data.frame(input.df[1,c(4:(length(names(input.df))))])
   avg <- vector(length=(length(names(input.df)) - 4))
@@ -328,7 +335,7 @@ for (name in in.files) {
 	cat(paste("Now working on",name,"...\n\n"))
 	
 	polii <- read.gff(name,"polii")
-	polii.exp <- gene.exp(polii, genes.file=op.args[["genes.file"]], iter=op.args[["iter"]])
+	polii.exp <- gene.exp(polii, iter=op.args[["iter"]])
 	
 	out <- subset(polii.exp,FDR < op.args[["fdr"]])
 	
