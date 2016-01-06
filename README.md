@@ -32,7 +32,7 @@ For a list of all possible commandline options, use
 
 ## Downstream data processing
 
-Two different transcriptomes generated through this method may be compared using the [polii.correlation.plot](https://github.com/owenjm/damid_misc/blob/master/polii.correlation.plot) available from the [damid_misc](https://github.com/owenjm/damid_misc).
+Two different transcriptomes generated through this method may be compared using the [polii.correlation.plot](https://github.com/owenjm/damid_misc/blob/master/polii.correlation.plot) available from the [damid_misc](https://github.com/owenjm/damid_misc) repository.
 
 ## Differences between RNA pol II DamID and RNAseq
 
