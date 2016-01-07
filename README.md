@@ -41,7 +41,7 @@ For a list of all possible commandline options, use
 
 ## Downstream data processing
 
-Two different transcriptomes generated through this method may be compared using the [polii.correlation.plot](https://github.com/owenjm/damid_misc/blob/master/polii.correlation.plot) available from the [damid_misc](https://github.com/owenjm/damid_misc) repository.
+Two different transcriptomes generated through this method may be compared using the [polii.correlation.plot](https://github.com/owenjm/damid_misc/blob/master/polii.correlation.plot) Rscript available from the [damid_misc](https://github.com/owenjm/damid_misc) repository.
 
 		Rscript polii.correlation.plot [file1.genes.details.csv] [file2.genes.details.csv]
 
