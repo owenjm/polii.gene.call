@@ -18,7 +18,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 
 # USA
 
-# version 0.991
+# version 1.0
 
 ### FDR calcs ###
 # Method based on original perl scripts by Tony Southall (TDS) as published in
@@ -29,8 +29,8 @@
 # * using a linear regression for the final intercept value rather than using the average intercept value for all conditions
 # -- both of these should increase the accuracy of the final FDR value.
 
-version <- 0.991
-cat(paste("polii.gene.call.r v",version,"\n", sep=""))
+version <- "1.0"
+cat(paste("polii.gene.call v",version,"\n", sep=""))
 
 ### Read CLI options
 input.args <- commandArgs(trailingOnly = TRUE)
@@ -118,9 +118,20 @@ if (nrow(genes) == 0) {
 
 ### functions
 read.gff <- function (x,name="score") {
-  temp.data <- read.table(x,row.names=NULL)[,c(1,4,5,6)]
-  names(temp.data) <- c("chr","start","end",name)
-  return(temp.data)
+  temp.data <- read.table(x,row.names=NULL,comment.char="t")
+  if (ncol(temp.data) > 4) {
+	# GFF
+	trim.data <- temp.data[,c(1,4,5,6)]
+  } else if (ncol(temp.data) == 4) {
+	# bedgraph
+	trim.data <- temp.data
+  } else {
+	cat("Error: input file does not appear to be in bedGraph or GFF format ...\n\n")
+	quit("no",1)
+  }
+  
+  names(trim.data) <- c("chr","start","end",name)
+  return(trim.data)
 }
 
 gene.exp <- function (input.df, buffer=0, iter=50000, debug=F) {
@@ -142,9 +153,6 @@ gene.exp <- function (input.df, buffer=0, iter=50000, debug=F) {
   frag.samp <- c(1,2,3,4,6,8,10,12,15)
   thres.samp <- c(0.1,0.2,0.3,0.4,0.5,0.65,0.8,1.0,1.5,2.0)
   
-  # I've had enormous difficulty using dynamically assigned variable names in R.
-  # The only solution I've found has been to use the list construct, which seems to allow
-  # dynamic name declations.  It's not pretty, but it works.
   rand <- list()
   
   for (thres in thres.samp) {
@@ -153,7 +161,7 @@ gene.exp <- function (input.df, buffer=0, iter=50000, debug=F) {
     
     # init vars
     for (f in frag.samp) {
-      # e.g: frag 1, thres 0.2: rand[[thres.1.0.2]]
+      # List names are, e.g. frag 1, thres 0.2: rand[[thres.1.0.2]]
       rand[[paste("thres.",f,".",thres,sep="")]] <- 0;
     }
     
@@ -208,7 +216,6 @@ gene.exp <- function (input.df, buffer=0, iter=50000, debug=F) {
   }
   
   # ... and now we do a linear regression on the slopes and intercepts of our previous regressions
-  #
   # (This is the clever bit, and it actually seems to work.  The correlation of slope to fragment size is linear ...
   # By doing this on the slope and intercept, we can now predict the FDR for any number of fragments with any expression.)
   slope <- vector()
@@ -228,7 +235,7 @@ gene.exp <- function (input.df, buffer=0, iter=50000, debug=F) {
   # ... there's actually quite a bit of variation of the intercept with real data,
   # so we're going to do a lin regression on the intercept instead.
   #
-  # (I'm not convinced it's a linear relationship.  But it's close to linear,
+  # (I'm not convinced it's a true linear relationship.  But it's close to linear,
   # and will certainly perform better than taking the mean intercept ...)
   #
   # If you're interested, set the debug flag to TRUE and take a look at the plots generated below ...
@@ -252,7 +259,6 @@ gene.exp <- function (input.df, buffer=0, iter=50000, debug=F) {
     plot.debug(slope,frag.samp,slope.lm,name="correlation of slope")
     plot.debug(inter,frag.samp,inter.lm,name="correlation of intercepts")
   }
-  
   
   # ok, so putting that all together ...
   fdr <- function (frags, expr) {
@@ -327,20 +333,21 @@ gene.exp <- function (input.df, buffer=0, iter=50000, debug=F) {
   avg.exp <- avg.exp[,c(1,5:(length(names(avg.exp))))]
   names(avg.exp) <- c("name",names(input.df)[c(4:(length(names(input.df))))],"gatc.num","FDR")
   
-  cat("\nAll done.\n\n")
   return(avg.exp)
 }
 
 for (name in in.files) {
-	cat(paste("Now working on",name,"...\n\n"))
+	cat(paste("\nNow working on",name,"...\n"))
+	bname <- basename(name)
+	fname <- sub("\\..*","",bname,perl=T)
 	
 	polii <- read.gff(name,"polii")
 	polii.exp <- gene.exp(polii, iter=op.args[["iter"]])
 	
 	out <- subset(polii.exp,FDR < op.args[["fdr"]])
 	
-	write.table(polii.exp,paste(name,"details.csv",sep="."),row.names=F,col.names=T,quote=T,sep="\t")
-	write.table(out$name, paste(name,"genes",sep="."),row.names=F,col.names=F,quote=F)
+	write.table(polii.exp,paste(fname,"genes.details.csv",sep="."),row.names=F,col.names=T,quote=T,sep="\t")
+	write.table(out$name, paste(fname,"genes",sep="."),row.names=F,col.names=F,quote=F)
 }
 
-cat("\n\nAll done.\n\n")
+cat("\nAll done.\n\n")
