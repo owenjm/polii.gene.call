@@ -38,6 +38,10 @@ For a list of all possible commandline options, use
 
 Two different transcriptomes generated through this method may be compared using the [polii.correlation.plot](https://github.com/owenjm/damid_misc/blob/master/polii.correlation.plot) available from the [damid_misc](https://github.com/owenjm/damid_misc) repository.
 
+		Rscript polii.correlation.plot [file1.genes.details.csv] [file2.genes.details.csv]
+
+The output is both a graphical plot of differentially expressed genes, and a table listing the difference in mean log2(occupancy).
+
 ## Differences between RNA pol II DamID and RNAseq
 
 Although both are methods for transcriptional profiling, please be aware that there may be differences between these two methods.  In particular, transcript abundancy as assessed through RNAseq will depend on transcript stability, whereas RNA pol II occupancy may provide a better indication of transcription levels.
