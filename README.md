@@ -14,7 +14,7 @@ Marshall OJ and Brand AH. (2015) damidseq_pipeline: an automated pipeline for pr
   1. R
   3. A GFF-formatted list of genes.  A file for release 6 of the Drosophila genome is provided in the archive; most GFF annotation files should also work.  Place this file in an accessible directory and use the --genes.file commandline switch to access it:
 
-		polii.gene.call.r --genes.file=/path/to/my-genes-anotation.gff
+		polii.gene.call --genes.file=/path/to/my-genes-anotation.gff
 
 ## Installation
 
