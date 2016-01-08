@@ -30,10 +30,10 @@ Run polii.gene.call as follows:
 
 Each file will be processed separately, with the output being two files:
 
-  1. [name].genes.details.csv
+  1. [filename].genes.details.csv
   	
 	A .csv table of all genes, together with average occupancy and FDR
-  2. [name].genes
+  2. [filename].genes
   	
 	A plain text list of all genes below the FDR threshold (default is 0.01; change with --FDR= commandline switch).  These genes may be considered to represent the significantly transcribed genes within a genome.
 
