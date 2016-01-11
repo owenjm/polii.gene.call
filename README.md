@@ -9,7 +9,7 @@ If you find this software useful, please cite:
 
 Marshall OJ and Brand AH. (2015) damidseq_pipeline: an automated pipeline for processing DamID sequencing datasets. *Bioinformatics.* 31(20):3371-3.  doi: 10.1093/bioinformatics/btv386. ([pubmed](http://www.ncbi.nlm.nih.gov/pubmed/26112292); [full text, open access](http://bioinformatics.oxfordjournals.org/content/early/2015/07/13/bioinformatics.btv386.long))
 
-Southall TD1, Gold KS, Egger B, Davidson CM, Caygill EE, Marshall OJ, Brand AH. (2013)  Cell-type-specific profiling of gene expression and chromatin binding without cell isolation: assaying RNA Pol II occupancy in neural stem cells. *Dev Cell.* 26(1):101-12. doi: 10.1016/j.devcel.2013.05.020 ([pubmed](http://www.ncbi.nlm.nih.gov/pubmed/23792147); [full text, open access](http://www.cell.com/developmental-cell/abstract/S1534-5807%2813%2900314-6))
+Southall TD, Gold KS, Egger B, Davidson CM, Caygill EE, Marshall OJ, Brand AH. (2013)  Cell-type-specific profiling of gene expression and chromatin binding without cell isolation: assaying RNA Pol II occupancy in neural stem cells. *Dev Cell.* 26(1):101-12. doi: 10.1016/j.devcel.2013.05.020 ([pubmed](http://www.ncbi.nlm.nih.gov/pubmed/23792147); [full text, open access](http://www.cell.com/developmental-cell/abstract/S1534-5807%2813%2900314-6))
 
 ## Requirements
 
