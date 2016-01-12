@@ -18,8 +18,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 
 # USA
 
-# version 1.0
-
 ### FDR calcs ###
 # Method based on original perl scripts by Tony Southall (TDS) as published in
 # Southall et al. (2013). Dev Cell, 26(1), 101–12. doi:10.1016/j.devcel.2013.05.020
@@ -29,7 +27,7 @@
 # * using a linear regression for the final intercept value rather than using the average intercept value for all conditions
 # -- both of these should increase the accuracy of the final FDR value.
 
-version <- "1.0"
+version <- "1.0.1"
 cat(paste("polii.gene.call v",version,"\n", sep=""))
 
 ### Read CLI options
@@ -43,7 +41,7 @@ read.ops <- function (x) {
 		y <- unlist(strsplit(op,"="))
 		
 		if (y[1] == "help") {
-		  cat(paste("Usage: Rscript polii.gene.call.r [list of .gatc.gff ratio files to process]\n\n", sep=""))
+		  cat(paste("Usage: Rscript polii.gene.call.r [list of .gatc.bed or .gatc.gff ratio files to process]\n\n", sep=""))
 		  
 		  cat("Options:\n")
 		  for (n in names(op.args)) {
@@ -111,6 +109,8 @@ if (any(genes$type == 'gene')) {
 
 genes$name <- sapply(genes$details, FUN = function (x) {regmatches(x,gregexpr("(?<=Name=).*?(?=;)", x, perl=T))} )
 genes <- genes[,c('chr','start','end','strand','name')]
+genes$chr <- gsub("^chr","",genes$chr,perl=T)
+
 if (nrow(genes) == 0) {
 	cat("Error: unable to extract gene information from genes file\n\n")
 	quit("no",1)
@@ -131,6 +131,9 @@ read.gff <- function (x,name="score") {
   }
   
   names(trim.data) <- c("chr","start","end",name)
+  
+  trim.data$chr <- gsub("^chr","",trim.data$chr,perl=T)
+  
   return(trim.data)
 }
 
@@ -342,6 +345,7 @@ for (name in in.files) {
 	fname <- sub("\\..*","",bname,perl=T)
 	
 	polii <- read.gff(name,"polii")
+	
 	polii.exp <- gene.exp(polii, iter=op.args[["iter"]])
 	
 	out <- subset(polii.exp,FDR < op.args[["fdr"]])
